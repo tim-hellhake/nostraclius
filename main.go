@@ -7,7 +7,6 @@ import (
 	"path"
 
 	"github.com/nbd-wtf/go-nostr"
-	"github.com/nbd-wtf/go-nostr/nip19"
 )
 
 type Keyset struct {
@@ -81,20 +80,8 @@ func createKeyset() (*Keyset, error) {
 		return nil, err
 	}
 
-	nsec, err := nip19.EncodePrivateKey(sk)
-
-	if err != nil {
-		return nil, err
-	}
-
-	npub, err := nip19.EncodePublicKey(pk)
-
-	if err != nil {
-		return nil, err
-	}
-
 	return &Keyset{
-		Private: nsec,
-		Public:  npub,
+		Private: sk,
+		Public:  pk,
 	}, nil
 }
