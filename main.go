@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 	"path"
@@ -16,6 +17,10 @@ type Keyset struct {
 }
 
 func main() {
+	message := flag.String("message", "Hello", "the message")
+
+	flag.Parse()
+
 	keyset, err := getOrInitKeyset()
 
 	if err != nil {
@@ -23,7 +28,8 @@ func main() {
 	}
 
 	fmt.Printf("Keyset: %s\n", keyset)
-	err = sendMessage(keyset, "wss://relay.damus.io", "Hello")
+
+	err = sendMessage(keyset, "wss://relay.damus.io", *message)
 
 	if err != nil {
 		panic(err)
