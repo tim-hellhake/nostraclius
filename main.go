@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -22,6 +23,37 @@ func main() {
 	}
 
 	fmt.Printf("Keyset: %s\n", keyset)
+	err = sendMessage(keyset, "wss://relay.damus.io", "Hello")
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+func sendMessage(keyset *Keyset, url string, message string) error {
+	ev := nostr.Event{
+		PubKey:    keyset.Public,
+		CreatedAt: nostr.Now(),
+		Kind:      nostr.KindTextNote,
+		Tags:      nil,
+		Content:   message,
+	}
+
+	err := ev.Sign(keyset.Private)
+
+	if err != nil {
+		return err
+	}
+
+	ctx := context.Background()
+
+	relay, err := nostr.RelayConnect(ctx, url)
+
+	if err != nil {
+		return err
+	}
+
+	return relay.Publish(ctx, ev)
 }
 
 func getOrInitKeyset() (*Keyset, error) {
